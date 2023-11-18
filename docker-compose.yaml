@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
-    container_name: tracking
+    container_name: workflow-editor
     ports:
       - "8080:8080"
     depends_on:
@@ -18,7 +18,7 @@ services:
 
   postgres:
     image: postgres:latest
-    container_name: tracking_postgres
+    container_name: workflow-editor-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: myuser

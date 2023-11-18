@@ -4,19 +4,29 @@ import (
 	"log"
 	"os"
 	"strings"
-	"tracking/db"
+	
+	"workflow-editor/db"
+	"workflow-editor/internal/auth"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
+	dir, err := os.Getwd()
+    if err != nil {
+        log.Fatal(err)
+    }
+    log.Println("Current directory:", dir)
+
+	err = godotenv.Load()
 
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
 	db.ConnectDatabase()
+	db.SetupTables()
 
 	router := gin.Default()
 
@@ -38,6 +48,8 @@ func main() {
 			"message": "Hello world",
 		})
 	})
+
+	auth.SetupAuthRoutes(router)
 
 	host := os.Getenv("HOST")
 	err = router.Run(host)
