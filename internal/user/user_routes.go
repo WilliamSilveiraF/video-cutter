@@ -1,18 +1,19 @@
-package auth
+package user
 
 import (
 	"log"
 	"net/http"
 	"github.com/gin-gonic/gin"
+
+	"workflow-editor/middleware"
 )
 
 
-
-func SetupAuthRoutes(router *gin.Engine) {
-	authGroup := router.Group("/auth")
+func SetupUserRoutes(router *gin.Engine) {
+	userGroup := router.Group("/user")
 	{
-		authGroup.POST("/register", registerHandler)
-		authGroup.POST("/login", loginHandler)
+		userGroup.POST("/register", registerHandler)
+		userGroup.POST("/login", loginHandler)
 	}
 }
 
@@ -58,7 +59,7 @@ func loginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := GenerateJWT(loginUser.Email)
+	token, err := middleware.GenerateJWT(loginUser.Email)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})

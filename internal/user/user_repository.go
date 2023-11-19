@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"workflow-editor/db"
@@ -7,7 +7,7 @@ import (
 func RetrieveUser(email string) (*User, error) {
 	var user User
 
-	sqlQuery, err := db.ReadSQLFile("internal/auth/sql/retrieve_user.sql")
+	sqlQuery, err := db.ReadSQLFile("internal/user/sql/retrieve_user.sql")
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func RetrieveUser(email string) (*User, error) {
 }
 
 func InsertUser(user User) error {
-	sqlQuery, err := db.ReadSQLFile("internal/auth/sql/insert_user.sql")
+	sqlQuery, err := db.ReadSQLFile("internal/user/sql/insert_user.sql")
 	if err != nil {
 		return err
 	}

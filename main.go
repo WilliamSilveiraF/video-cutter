@@ -6,7 +6,7 @@ import (
 	
 	"workflow-editor/db"
 	"workflow-editor/middleware"
-	"workflow-editor/internal/auth"
+	"workflow-editor/internal/user"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -38,7 +38,7 @@ func main() {
 		})
 	})
 
-	auth.SetupAuthRoutes(router)
+	user.SetupUserRoutes(router)
 
 	host := os.Getenv("HOST")
 	err = router.Run(host)
