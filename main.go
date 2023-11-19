@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"os"
-	"strings"
 	
 	"workflow-editor/db"
+	"workflow-editor/middleware"
 	"workflow-editor/internal/auth"
 
 	"github.com/gin-gonic/gin"
@@ -30,18 +30,7 @@ func main() {
 
 	router := gin.Default()
 
-	proxyStr := os.Getenv("PROXIES")
-
-	if proxyStr != ""{
-		trustedProxies := strings.Split(proxyStr, ",")
-		err = router.SetTrustedProxies(trustedProxies)
-
-		if err != nil {
-			log.Fatal("Error setting trusted proxies")
-		}
-	} else {
-		log.Fatal("No trusted proxies set")
-	}
+	router.Use(middleware.CORSMiddleware())
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
