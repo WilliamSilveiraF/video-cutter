@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"log"
@@ -9,11 +9,11 @@ import (
 )
 
 
-func SetupAuthRoutes(router *gin.Engine) {
-	authGroup := router.Group("/auth")
+func SetupUserRoutes(router *gin.Engine) {
+	userGroup := router.Group("/user")
 	{
-		authGroup.POST("/register", registerHandler)
-		authGroup.POST("/login", loginHandler)
+		userGroup.POST("/register", registerHandler)
+		userGroup.POST("/login", loginHandler)
 	}
 }
 

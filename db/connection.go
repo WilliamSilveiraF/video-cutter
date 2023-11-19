@@ -39,7 +39,7 @@ func ConnectDatabase() {
 
 func SetupTables() {
 	paths := []string{
-		"internal/auth/sql/create_table.sql",
+		"internal/user/sql/create_table.sql",
 	}
 
 	for _, path := range paths {
