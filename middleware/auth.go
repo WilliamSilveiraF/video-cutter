@@ -1,12 +1,37 @@
-package auth
+package middleware
 
 import (
+	"time"
+	"os"
 	"net/http"
+
     "github.com/gin-gonic/gin"
     "github.com/golang-jwt/jwt/v5"
+
+
 )
 
-func TokenAuthMiddleware() gin.HandlerFunc {
+var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+
+type Claims struct {
+	Email string `json:"email"`
+	jwt.RegisteredClaims
+}
+
+func GenerateJWT(email string) (string, error) {
+	expirationTime := time.Now().Add(1 * time.Hour)
+	claims := &Claims{
+		Email: email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(jwtKey)
+}
+
+func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 

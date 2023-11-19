@@ -4,8 +4,9 @@ import (
 	"log"
 	"net/http"
 	"github.com/gin-gonic/gin"
-)
 
+	"workflow-editor/middleware"
+)
 
 
 func SetupAuthRoutes(router *gin.Engine) {
@@ -58,7 +59,7 @@ func loginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := GenerateJWT(loginUser.Email)
+	token, err := middleware.GenerateJWT(loginUser.Email)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
