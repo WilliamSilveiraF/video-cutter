@@ -6,24 +6,35 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"workflow-editor/middleware"
+	"workflow-editor/internal/person"
 )
 
 func RegisterHandler(c *gin.Context) {
-	var newUser User
+    var request RegisterUserRequest
 
-	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
+    if err := c.BindJSON(&request); err != nil {
+		log.Println(err);
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        return
+    }
 
-	err := RegisterUser(newUser.Email, newUser.Password)
-	if err != nil {
-		log.Fatal(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
-		return
-	}
+    userID, err := RegisterUser(request.User.Email, request.User.Password)
+    if err != nil {
+        log.Println(err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
+    request.Person.UserID = userID
+
+    err = person.InsertPerson(request.Person)
+    if err != nil {
+        log.Println(err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save person details"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
 }
 
 

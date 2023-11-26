@@ -22,22 +22,23 @@ func RetrieveUser(email string) (*User, error) {
 	return &user, nil
 }
 
-func InsertUser(user User) error {
-	sqlQuery, err := db.ReadSQLFile("internal/user/sql/insert_user.sql")
-	if err != nil {
-		return err
-	}
+func InsertUser(user User) (int, error) {
+    sqlQuery, err := db.ReadSQLFile("internal/user/sql/insert_user.sql")
+    if err != nil {
+        return 0, err
+    }
 
-	stmt, err := db.GetDB().Prepare(sqlQuery)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
+    stmt, err := db.GetDB().Prepare(sqlQuery)
+    if err != nil {
+        return 0, err
+    }
+    defer stmt.Close()
 
-	_, err = stmt.Exec(user.Email, user.Password)
-	if err != nil {
-		return err
-	}
+    var userID int
+    err = stmt.QueryRow(user.Email, user.Password).Scan(&userID)
+    if err != nil {
+        return 0, err
+    }
 
-	return nil
+    return userID, nil
 }
