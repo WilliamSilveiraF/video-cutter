@@ -26,16 +26,21 @@ func LoginUser(email, password string) (bool, error) {
 	return CheckPasswordHash(password, user.Password), nil
 }
 
-func RegisterUser(email, password string) error {
-	hashedPassword, err := HashPassword(password)
-	if err != nil {
-		return err
-	}
+func RegisterUser(email, password string) (int, error) {
+    hashedPassword, err := HashPassword(password)
+    if err != nil {
+        return 0, err
+    }
 
-	newUser := User{
-		Email:    email,
-		Password: hashedPassword,
-	}
+    newUser := User{
+        Email:    email,
+        Password: hashedPassword,
+    }
 
-	return InsertUser(newUser)
+    userID, err := InsertUser(newUser)
+    if err != nil {
+        return 0, err
+    }
+
+    return userID, nil
 }
