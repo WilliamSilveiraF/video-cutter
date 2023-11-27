@@ -38,7 +38,14 @@ func main() {
 		})
 	})
 
+	
 	user.SetupUserRoutes(router)
+	authenticatedUserGroup := router.Group("/user").Use(middleware.UserMiddleware())
+	if authGroup, ok := authenticatedUserGroup.(*gin.RouterGroup); ok {
+		user.SetupAuthenticatedUserRoutes(authGroup)
+	} else {
+		log.Fatal("Failed to assert type of authenticatedUserGroup")
+	}
 
 	host := os.Getenv("HOST")
 	err = router.Run(host)

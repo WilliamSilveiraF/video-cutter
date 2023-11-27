@@ -1,36 +1,15 @@
-package user
+package middleware
 
 import (
-	"time"
-	"os"
 	"net/http"
 	"log"
 	"strings"
 
+	"workflow-editor/internal/user"
     "github.com/gin-gonic/gin"
     "github.com/golang-jwt/jwt/v5"
 
 )
-
-var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
-
-type Claims struct {
-	Email string `json:"email"`
-	jwt.RegisteredClaims
-}
-
-func GenerateJWT(email string) (string, error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
-	claims := &Claims{
-		Email: email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtKey)
-}
 
 func UserMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -50,10 +29,10 @@ func UserMiddleware() gin.HandlerFunc {
             return
         }
 
-		claims := &Claims{}
+		claims := &user.Claims{}
 
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
+			return user.JwtKey, nil
 		})
 
 		if err != nil || !token.Valid {
@@ -64,7 +43,7 @@ func UserMiddleware() gin.HandlerFunc {
 
 		email := claims.Email
 
-		user, err := RetrieveUser(email)
+		user, err := user.RetrieveUser(email)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user"})
