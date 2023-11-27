@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 
-	"workflow-editor/middleware"
 	"workflow-editor/internal/person"
 )
 
@@ -59,7 +58,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := middleware.GenerateJWT(loginUser.Email)
+	token, err := GenerateJWT(loginUser.Email)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
@@ -67,4 +66,44 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": token})
+}
+
+
+func UpdatePasswordHandler(c *gin.Context) {
+	var updatePasswordRequest UpdatePasswordRequest
+
+	if err := c.BindJSON(&updatePasswordRequest); err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	err := UpdateUserPassword(updatePasswordRequest.Email, updatePasswordRequest.OldPassword, updatePasswordRequest.NewPassword)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"Failed to update password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
+}
+
+
+func CurrentUserHandler(c *gin.Context) {
+	userObj, exists := c.Get("user")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	user, ok := userObj.(*User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error"})
+		return
+	}
+
+	user.Password = ""
+
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }

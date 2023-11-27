@@ -1,13 +1,14 @@
-package middleware
+package user
 
 import (
 	"time"
 	"os"
 	"net/http"
+	"log"
+	"strings"
 
     "github.com/gin-gonic/gin"
     "github.com/golang-jwt/jwt/v5"
-
 
 )
 
@@ -31,7 +32,7 @@ func GenerateJWT(email string) (string, error) {
 	return token.SignedString(jwtKey)
 }
 
-func AuthMiddleware() gin.HandlerFunc {
+func UserMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 
@@ -40,6 +41,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		if strings.HasPrefix(tokenString, "Bearer ") {
+            tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+        } else {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+            c.Abort()
+            return
+        }
 
 		claims := &Claims{}
 
@@ -53,7 +62,18 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("email", claims.Email)
+		email := claims.Email
+
+		user, err := RetrieveUser(email)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user"})
+			c.Abort()
+			return
+		}
+
+		c.Set("user", user)
+		c.Set("email", email)
 		c.Next()
 	}
 }

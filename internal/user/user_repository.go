@@ -42,3 +42,21 @@ func InsertUser(user User) (int, error) {
 
     return userID, nil
 }
+
+func UpdatePassword(email, newPassword string) error {
+	sqlQuery, err := db.ReadSQLFile("internal/user/sql/update_password.sql")
+	if err != nil {
+		return err
+	}
+
+	stmt, err := db.GetDB().Prepare(sqlQuery)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(newPassword, email)
+
+	return err
+}

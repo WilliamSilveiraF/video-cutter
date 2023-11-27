@@ -2,6 +2,7 @@ package user
 
 import (
 	"golang.org/x/crypto/bcrypt"
+	"errors"
 )
 
 func CheckPasswordHash(password, hash string) bool {
@@ -43,4 +44,22 @@ func RegisterUser(email, password string) (int, error) {
     }
 
     return userID, nil
+}
+
+func UpdateUserPassword(email, oldPassword, newPassword string) error {
+	user, err := RetrieveUser(email)
+	if err != nil {
+		return err
+	}
+
+	if !CheckPasswordHash(oldPassword, user.Password) {
+		return errors.New("old password does not match")
+	}
+
+	hashedNewPassword, err := HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	return UpdatePassword(email, hashedNewPassword)
 }
