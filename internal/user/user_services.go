@@ -12,13 +12,15 @@ import (
 var JwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 type Claims struct {
-	Email string `json:"email"`
+	UserID int    `json:"user_id"`
+	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(userID int, email string) (string, error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &Claims{
+		UserID: userID,
 		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
@@ -42,13 +44,14 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), nil
 }
 
-func LoginUser(email, password string) (bool, error) {
-	user, err := RetrieveUser(email)
-	if err != nil {
-		return false, err
-	}
+func LoginUser(email, password string) (*User, bool, error) {
+    user, err := RetrieveUser(email)
+    if err != nil {
+        return nil, false, err
+    }
 
-	return CheckPasswordHash(password, user.Password), nil
+    authSuccess := CheckPasswordHash(password, user.Password)
+    return user, authSuccess, nil
 }
 
 func RegisterUser(email, password string) (int, error) {

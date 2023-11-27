@@ -5,21 +5,20 @@ import (
 )
 
 func RetrieveUser(email string) (*User, error) {
-	var user User
+    var user User
 
-	sqlQuery, err := db.ReadSQLFile("internal/user/sql/retrieve_user.sql")
-	if err != nil {
-		return nil, err
-	}
+    sqlQuery, err := db.ReadSQLFile("internal/user/sql/retrieve_user.sql")
+    if err != nil {
+        return nil, err
+    }
 
-	row := db.GetDB().QueryRow(sqlQuery, email)
-	err = row.Scan(&user.Password)
-	if err != nil {
-		return nil , err
-	}
+    row := db.GetDB().QueryRow(sqlQuery, email)
+    err = row.Scan(&user.ID, &user.Email, &user.Password)
+    if err != nil {
+        return nil, err
+    }
 
-	user.Email = email
-	return &user, nil
+    return &user, nil
 }
 
 func InsertUser(user User) (int, error) {

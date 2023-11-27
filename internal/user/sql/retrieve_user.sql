@@ -1,3 +1,3 @@
 -- retrieve_user.sql
 
-SELECT password FROM users WHERE email = $1;
+SELECT id, email, password FROM users WHERE email = $1;

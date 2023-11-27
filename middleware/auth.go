@@ -44,13 +44,15 @@ func UserMiddleware() gin.HandlerFunc {
 		email := claims.Email
 
 		user, err := user.RetrieveUser(email)
+		
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user"})
 			c.Abort()
 			return
 		}
-
+		
+		c.Set("userID", user.ID)
 		c.Set("user", user)
 		c.Set("email", email)
 		c.Next()

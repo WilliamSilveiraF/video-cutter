@@ -6,12 +6,12 @@ import (
 )
 
 type Person struct {
-	ID        int		
-	UserID    int
-	FirstName string
-	LastName  string
-	Gender    string
-	Contact   string
+	ID        int		`json:"id"`
+	UserID    int       `json:"user_id"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Gender    string    `json:"gender"`
+	Contact   string    `json:"contact"`
 	Birthday  time.Time	`json:"birthday"`
 }
 

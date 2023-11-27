@@ -6,8 +6,9 @@ import (
 
 
 type User struct {
-	Email    string	`json:"email"`
-	Password string	`json:"password"`
+    ID       int    `json:"id,omitempty"`
+    Email    string `json:"email"`
+    Password string `json:"password,omitempty"`
 }
 
 type RegisterUserRequest struct {
