@@ -42,6 +42,7 @@ func SetupTables() {
 		"internal/user/sql/create_table.sql",
 		"internal/person/sql/create_table.sql",
 		"internal/address/sql/create_table.sql",
+		"internal/card/sql/create_table.sql",
 	}
 
 	for _, path := range paths {
