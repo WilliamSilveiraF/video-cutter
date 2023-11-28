@@ -40,23 +40,22 @@ func InsertPerson(person Person) error {
 	return nil
 }
 
-func UpdatePerson(person Person) error {
-	sqlQuery, err := db.ReadSQLFile("internal/person/sql/update_person.sql")
-	if err != nil {
-		return err
-	}
+func UpdatePerson(userID int, person Person) error {
+    sqlQuery, err := db.ReadSQLFile("internal/person/sql/update_person.sql")
+    if err != nil {
+        return err
+    }
 
-	stmt, err := db.GetDB().Prepare(sqlQuery)
-	if err != nil {
-		return err
-	}
+    stmt, err := db.GetDB().Prepare(sqlQuery)
+    if err != nil {
+        return err
+    }
+    defer stmt.Close()
 
-	defer stmt.Close()
+    _, err = stmt.Exec(userID, person.FirstName, person.LastName, person.Gender, person.Contact, person.Birthday)
+    if err != nil {
+        return err
+    }
 
-	_, err = stmt.Exec(person.ID, person.UserID, person.FirstName, person.LastName, person.Gender, person.Contact, person.Birthday)
-	if err != nil {
-		return err
-	}
-
-	return nil
+    return nil
 }
