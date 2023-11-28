@@ -8,6 +8,7 @@ import (
 	"workflow-editor/middleware"
 	"workflow-editor/internal/user"
 	"workflow-editor/internal/person"
+	"workflow-editor/internal/address"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -53,7 +54,13 @@ func main() {
 	} else {
 		log.Fatal("Failed to assert type of authenticated person group")
 	}
-	
+	    
+	authenticatedAddressGroup := router.Group("/address").Use(middleware.UserMiddleware())
+	if addressGroup, ok := authenticatedAddressGroup.(*gin.RouterGroup); ok {
+		address.SetupAuthenticatedAddressRoutes(addressGroup)
+	} else {
+		log.Fatal("Failed to assert type of authentica address group")
+	}
 
 	host := os.Getenv("HOST")
 	err = router.Run(host)
