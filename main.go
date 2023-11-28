@@ -10,11 +10,13 @@ import (
 	"workflow-editor/internal/person"
 	"workflow-editor/internal/address"
 	"workflow-editor/internal/card"
+	"workflow-editor/internal/audio"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "gcp.json")
 	dir, err := os.Getwd()
     if err != nil {
         log.Fatal(err)
@@ -69,6 +71,15 @@ func main() {
 	} else {
 		log.Fatal("Failed to assert type of authenticated card group")
 	}
+
+	authenticatedAudioGroup := router.Group("/audio").Use(middleware.UserMiddleware())
+	if audioGroup, ok := authenticatedAudioGroup.(*gin.RouterGroup); ok {
+		audio.SetupAuthenticatedAudioRoutes(audioGroup)
+	} else {
+		log.Fatal("Failed to assert type of authenticated audio group")
+
+	}
+
 	host := os.Getenv("HOST")
 	err = router.Run(host)
 	
