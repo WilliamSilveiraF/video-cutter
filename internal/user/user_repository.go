@@ -13,7 +13,7 @@ func RetrieveUser(email string) (*User, error) {
     }
 
     row := db.GetDB().QueryRow(sqlQuery, email)
-    err = row.Scan(&user.ID, &user.Email, &user.Password)
+    err = row.Scan(&user.ID, &user.Email, &user.Password, &user.UseTermsID)
     if err != nil {
         return nil, err
     }
@@ -34,7 +34,7 @@ func InsertUser(user User) (int, error) {
     defer stmt.Close()
 
     var userID int
-    err = stmt.QueryRow(user.Email, user.Password).Scan(&userID)
+    err = stmt.QueryRow(user.Email, user.Password, user.UseTermsID).Scan(&userID)
     if err != nil {
         return 0, err
     }

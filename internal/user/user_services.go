@@ -6,7 +6,7 @@ import (
 	"errors"
     "github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	
+	"workflow-editor/internal/use_terms"
 )
 
 var JwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
@@ -18,7 +18,7 @@ type Claims struct {
 }
 
 func GenerateJWT(userID int, email string) (string, error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
+	expirationTime := time.Now().Add(12 * time.Hour)
 	claims := &Claims{
 		UserID: userID,
 		Email: email,
@@ -60,9 +60,15 @@ func RegisterUser(email, password string) (int, error) {
         return 0, err
     }
 
+    useTermsID, err := use_terms.GetLatestUseTermsID()
+    if err != nil {
+        return 0, err
+    }
+
     newUser := User{
-        Email:    email,
-        Password: hashedPassword,
+        Email:      email,
+        Password:   hashedPassword,
+        UseTermsID: useTermsID,
     }
 
     userID, err := InsertUser(newUser)

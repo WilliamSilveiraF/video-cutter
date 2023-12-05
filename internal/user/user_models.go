@@ -6,9 +6,10 @@ import (
 
 
 type User struct {
-    ID       int    `json:"id,omitempty"`
-    Email    string `json:"email"`
-    Password string `json:"password,omitempty"`
+    ID          int    `json:"id,omitempty"`
+    Email       string `json:"email"`
+    Password    string `json:"password,omitempty"`
+    UseTermsID  int    `json:"use_terms_id,omitempty"`
 }
 
 type RegisterUserRequest struct {
