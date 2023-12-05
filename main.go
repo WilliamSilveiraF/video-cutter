@@ -11,6 +11,7 @@ import (
 	"workflow-editor/internal/address"
 	"workflow-editor/internal/card"
 	"workflow-editor/internal/audio"
+	"workflow-editor/internal/use_terms"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -78,6 +79,13 @@ func main() {
 	} else {
 		log.Fatal("Failed to assert type of authenticated audio group")
 
+	}
+
+	authenticatedUseTermsGroup := router.Group("/use_terms").Use(middleware.UserMiddleware())
+	if useTermsGroup, ok := authenticatedUseTermsGroup.(*gin.RouterGroup); ok {
+		use_terms.SetupAuthenticatedUseTermsRoutes(useTermsGroup)
+	} else {
+		log.Fatal("Failed to assert type of authenticated use terms group")
 	}
 
 	host := os.Getenv("HOST")

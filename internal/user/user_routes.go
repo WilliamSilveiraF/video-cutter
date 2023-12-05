@@ -9,10 +9,12 @@ func SetupUserRoutes(router *gin.Engine) {
 	{
 		userGroup.POST("/register", RegisterHandler)
 		userGroup.POST("/login", LoginHandler)
+		
 	}
 }
 
 func SetupAuthenticatedUserRoutes(authenticatedUserGroup *gin.RouterGroup) {
 	authenticatedUserGroup.POST("/update-password", UpdatePasswordHandler)
 	authenticatedUserGroup.GET("/current", CurrentUserHandler)
+	authenticatedUserGroup.GET("/current/use_terms", GetCurrentUseTermsHandler)
 }

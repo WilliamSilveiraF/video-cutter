@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"workflow-editor/internal/person"
+    "workflow-editor/internal/use_terms"
 )
 
 func RegisterHandler(c *gin.Context) {
@@ -106,4 +107,27 @@ func CurrentUserHandler(c *gin.Context) {
 	user.Password = ""
 
 	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func GetCurrentUseTermsHandler(c *gin.Context) {
+    userObj, exists := c.Get("user")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+        return
+    }
+
+    user, ok := userObj.(*User)
+    if !ok {
+        log.Println(ok)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error"})
+        return
+    }
+
+    useTerms, err := use_terms.GetUseTermsByID(user.UseTermsID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve terms of use"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"use_terms": useTerms})
 }
